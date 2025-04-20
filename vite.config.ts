@@ -19,7 +19,9 @@ export default defineConfig({
     port: 5173,
     allowedHosts: true,
     hmr: {
-      overlay: false // Disables the error overlay if you only want console errors
+      overlay: false, // Disables the error overlay if you only want console errors
+      clientPort: 443, // Используем порт 443 для WebSocket соединения
+      host: 'preview--neuro-chat-dark-mode.poehali.dev' // Указываем хост для WebSocket соединения
     }
   },
 });
