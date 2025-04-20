@@ -32,18 +32,20 @@ interface ChatInterfaceProps {
   models: ModelInfo[];
 }
 
-// Demo images and videos for the models
+// Реальные демо-изображения и видео для моделей
 const demoContent = {
   images: [
-    "/public/demo-image-1.jpg", 
-    "https://source.unsplash.com/random/800x600/?space",
-    "https://source.unsplash.com/random/800x600/?nature",
-    "https://source.unsplash.com/random/800x600/?art",
-    "https://source.unsplash.com/random/800x600/?city",
+    "https://images.unsplash.com/photo-1679678691006-0ad24fecb769?q=80&w=1964&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", 
+    "https://images.unsplash.com/photo-1614730321146-b6fa6a46bcb4?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    "https://images.unsplash.com/photo-1679594647079-adb516bc954a?q=80&w=1932&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    "https://images.unsplash.com/photo-1696652163362-94f1ebb8cddc?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    "https://images.unsplash.com/photo-1706514577324-5eecee7f2379?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
   ],
   videos: [
-    "https://v.redd.it/kfpbln93s7w61/DASH_720.mp4",
-    "https://v.redd.it/6u51p07z3aq61/DASH_720.mp4",
+    "https://player.vimeo.com/external/559160858.sd.mp4?s=4b36c4ce69e61caf8f0eaa82c01f6ef7f5104c92&profile_id=165&oauth2_token_id=57447761",
+    "https://player.vimeo.com/external/517090081.sd.mp4?s=cad3e76825cfe3add0fe525e79949abe96a4d24a&profile_id=165&oauth2_token_id=57447761",
+    "https://player.vimeo.com/external/451823388.sd.mp4?s=c14a9e8442bf5ae4643c0403cafe8c5d80d706ec&profile_id=165&oauth2_token_id=57447761",
+    "https://player.vimeo.com/external/434045526.sd.mp4?s=c27eff4ad66f9bafcd7706822c829effbb4310a6&profile_id=165&oauth2_token_id=57447761"
   ],
   gameTemplates: [
     {
@@ -686,6 +688,913 @@ const demoContent = {
   </script>
 </body>
 </html>`
+    },
+    {
+      name: "Тетрис",
+      code: `<!DOCTYPE html>
+<html>
+<head>
+  <title>Тетрис</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #0f172a;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      font-family: Arial, sans-serif;
+      color: white;
+    }
+    .game-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .info-panel {
+      display: flex;
+      justify-content: space-around;
+      width: 300px;
+      margin-bottom: 20px;
+    }
+    .score, .level, .lines {
+      text-align: center;
+    }
+    .label {
+      font-size: 14px;
+      color: #a78bfa;
+      margin-bottom: 5px;
+    }
+    .value {
+      font-size: 24px;
+      font-weight: bold;
+    }
+    canvas {
+      border: 2px solid #8b5cf6;
+      background-color: #1e293b;
+    }
+    .game-over {
+      position: absolute;
+      background-color: rgba(0, 0, 0, 0.8);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      border-radius: 8px;
+      padding: 20px;
+      display: none;
+    }
+    .game-over h2 {
+      font-size: 36px;
+      color: #ef4444;
+      margin-bottom: 20px;
+    }
+    .game-over button {
+      background-color: #8b5cf6;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      font-size: 18px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .game-over button:hover {
+      background-color: #7c3aed;
+    }
+    .controls {
+      margin-top: 20px;
+      font-size: 14px;
+      color: #94a3b8;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="game-container">
+    <div class="info-panel">
+      <div class="score">
+        <div class="label">СЧЁТ</div>
+        <div class="value" id="score">0</div>
+      </div>
+      <div class="level">
+        <div class="label">УРОВЕНЬ</div>
+        <div class="value" id="level">1</div>
+      </div>
+      <div class="lines">
+        <div class="label">ЛИНИИ</div>
+        <div class="value" id="lines">0</div>
+      </div>
+    </div>
+    
+    <div class="canvas-container">
+      <canvas id="tetris" width="300" height="600"></canvas>
+      <div class="game-over" id="gameOver">
+        <h2>ИГРА ОКОНЧЕНА</h2>
+        <button id="restartButton">ИГРАТЬ СНОВА</button>
+      </div>
+    </div>
+    
+    <div class="controls">
+      Управление: ← → для движения, ↑ для поворота, ↓ для ускорения
+    </div>
+  </div>
+
+  <script>
+    // Получаем элементы DOM
+    const canvas = document.getElementById('tetris');
+    const ctx = canvas.getContext('2d');
+    const scoreElement = document.getElementById('score');
+    const levelElement = document.getElementById('level');
+    const linesElement = document.getElementById('lines');
+    const gameOverPanel = document.getElementById('gameOver');
+    const restartButton = document.getElementById('restartButton');
+    
+    // Размер ячейки
+    const blockSize = 30;
+    const boardWidth = 10;
+    const boardHeight = 20;
+    
+    // Цвета для фигур
+    const colors = [
+      null,
+      '#FF0D72', // I
+      '#0DC2FF', // J
+      '#0DFF72', // L
+      '#F538FF', // O
+      '#FF8E0D', // S
+      '#FFE138', // T
+      '#3877FF'  // Z
+    ];
+    
+    // Фигуры тетриса
+    const pieces = [
+      [
+        [0, 0, 0, 0],
+        [1, 1, 1, 1],
+        [0, 0, 0, 0],
+        [0, 0, 0, 0]
+      ],
+      [
+        [2, 0, 0],
+        [2, 2, 2],
+        [0, 0, 0]
+      ],
+      [
+        [0, 0, 3],
+        [3, 3, 3],
+        [0, 0, 0]
+      ],
+      [
+        [4, 4],
+        [4, 4]
+      ],
+      [
+        [0, 5, 5],
+        [5, 5, 0],
+        [0, 0, 0]
+      ],
+      [
+        [0, 6, 0],
+        [6, 6, 6],
+        [0, 0, 0]
+      ],
+      [
+        [7, 7, 0],
+        [0, 7, 7],
+        [0, 0, 0]
+      ]
+    ];
+    
+    // Создаем поле игры
+    let board = createBoard();
+    
+    // Создаем игрока
+    let player = {
+      pos: {x: 0, y: 0},
+      piece: null,
+      score: 0,
+      level: 1,
+      lines: 0,
+      dropCounter: 0,
+      dropInterval: 1000, // 1 секунда
+    };
+    
+    // Переменные для игрового цикла
+    let lastTime = 0;
+    let gameOver = false;
+    
+    // Инициализация игры
+    initGame();
+    
+    // Создание игрового поля
+    function createBoard() {
+      return Array(boardHeight).fill().map(() => Array(boardWidth).fill(0));
+    }
+    
+    // Инициализация игры
+    function initGame() {
+      board = createBoard();
+      player.score = 0;
+      player.level = 1;
+      player.lines = 0;
+      player.dropInterval = 1000;
+      scoreElement.textContent = player.score;
+      levelElement.textContent = player.level;
+      linesElement.textContent = player.lines;
+      gameOver = false;
+      gameOverPanel.style.display = 'none';
+      createPiece();
+      
+      // Запускаем игровой цикл
+      requestAnimationFrame(gameLoop);
+    }
+    
+    // Создание новой фигуры
+    function createPiece() {
+      const pieceType = Math.floor(Math.random() * pieces.length);
+      player.piece = pieces[pieceType];
+      player.pos.y = 0;
+      player.pos.x = Math.floor((board[0].length - player.piece[0].length) / 2);
+      
+      // Проверка на конец игры - если новая фигура сразу сталкивается
+      if (checkCollision()) {
+        gameOver = true;
+        gameOverPanel.style.display = 'flex';
+      }
+    }
+    
+    // Проверка столкновений
+    function checkCollision() {
+      for (let y = 0; y < player.piece.length; y++) {
+        for (let x = 0; x < player.piece[y].length; x++) {
+          if (player.piece[y][x] !== 0 && // Если это часть фигуры
+              (!board[y + player.pos.y] || // Если выходит за поле по вертикали
+               !board[y + player.pos.y][x + player.pos.x] === undefined || // Если выходит за поле по горизонтали
+               board[y + player.pos.y][x + player.pos.x] !== 0)) { // Если ячейка занята
+            return true;
+          }
+        }
+      }
+      return false;
+    }
+    
+    // Поворот фигуры
+    function rotate() {
+      const piece = JSON.parse(JSON.stringify(player.piece)); // Создаем копию
+      
+      // Транспонируем матрицу
+      for (let y = 0; y < piece.length; y++) {
+        for (let x = 0; x < y; x++) {
+          [piece[x][y], piece[y][x]] = [piece[y][x], piece[x][y]];
+        }
+      }
+      
+      // Переворачиваем строки
+      piece.forEach(row => row.reverse());
+      
+      // Проверяем, возможен ли поворот
+      const originalPos = {...player.pos};
+      let offset = 0;
+      
+      player.piece = piece;
+      
+      // Если после поворота фигура выходит за пределы - пробуем сместить её
+      if (checkCollision()) {
+        for (offset = 1; offset < piece[0].length; offset++) {
+          player.pos.x += offset;
+          if (!checkCollision()) break;
+          
+          player.pos.x -= offset * 2;
+          if (!checkCollision()) break;
+          
+          player.pos.x += offset;
+        }
+      }
+      
+      // Если никакое смещение не помогло - отменяем поворот
+      if (checkCollision()) {
+        player.piece = JSON.parse(JSON.stringify(pieces[pieces.indexOf(player.piece)]));
+        player.pos = {...originalPos};
+      }
+    }
+    
+    // Сбрасываем фигуру вниз
+    function drop() {
+      player.pos.y++;
+      if (checkCollision()) {
+        player.pos.y--;
+        solidify();
+        removeLines();
+        createPiece();
+      }
+      player.dropCounter = 0;
+    }
+    
+    // Закрепляем фигуру на доске
+    function solidify() {
+      player.piece.forEach((row, y) => {
+        row.forEach((value, x) => {
+          if (value !== 0) {
+            board[y + player.pos.y][x + player.pos.x] = value;
+          }
+        });
+      });
+    }
+    
+    // Проверяем и удаляем заполненные линии
+    function removeLines() {
+      let linesCleared = 0;
+      
+      outer: for (let y = board.length - 1; y >= 0; y--) {
+        for (let x = 0; x < board[y].length; x++) {
+          if (board[y][x] === 0) continue outer;
+        }
+        
+        // Удаляем линию
+        const row = board.splice(y, 1)[0].fill(0);
+        board.unshift(row);
+        y++; // Проверяем ту же позицию снова
+        
+        linesCleared++;
+      }
+      
+      if (linesCleared > 0) {
+        // Начисляем очки (больше очков за одновременное удаление нескольких линий)
+        const points = [0, 40, 100, 300, 1200];
+        player.score += points[linesCleared] * player.level;
+        player.lines += linesCleared;
+        
+        // Повышаем уровень каждые 10 линий
+        const newLevel = Math.floor(player.lines / 10) + 1;
+        if (newLevel > player.level) {
+          player.level = newLevel;
+          player.dropInterval = Math.max(100, 1000 - (player.level - 1) * 100); // Увеличиваем скорость
+        }
+        
+        scoreElement.textContent = player.score;
+        levelElement.textContent = player.level;
+        linesElement.textContent = player.lines;
+      }
+    }
+    
+    // Перемещение фигуры
+    function move(dir) {
+      player.pos.x += dir;
+      if (checkCollision()) {
+        player.pos.x -= dir;
+      }
+    }
+    
+    // Отрисовка доски
+    function drawBoard() {
+      board.forEach((row, y) => {
+        row.forEach((value, x) => {
+          if (value !== 0) {
+            ctx.fillStyle = colors[value];
+            ctx.fillRect(x * blockSize, y * blockSize, blockSize, blockSize);
+            
+            // Отрисовка границ блока
+            ctx.strokeStyle = '#0f172a';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(x * blockSize, y * blockSize, blockSize, blockSize);
+          }
+        });
+      });
+    }
+    
+    // Отрисовка текущей фигуры
+    function drawPiece() {
+      player.piece.forEach((row, y) => {
+        row.forEach((value, x) => {
+          if (value !== 0) {
+            ctx.fillStyle = colors[value];
+            ctx.fillRect((x + player.pos.x) * blockSize, (y + player.pos.y) * blockSize, blockSize, blockSize);
+            
+            // Отрисовка границ блока
+            ctx.strokeStyle = '#0f172a';
+            ctx.lineWidth = 2;
+            ctx.strokeRect((x + player.pos.x) * blockSize, (y + player.pos.y) * blockSize, blockSize, blockSize);
+          }
+        });
+      });
+    }
+    
+    // Отрисовка всего игрового поля
+    function draw() {
+      // Очищаем canvas
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+      // Рисуем сетку (опционально)
+      ctx.strokeStyle = '#2a3548';
+      ctx.lineWidth = 1;
+      for (let i = 0; i <= boardWidth; i++) {
+        ctx.beginPath();
+        ctx.moveTo(i * blockSize, 0);
+        ctx.lineTo(i * blockSize, canvas.height);
+        ctx.stroke();
+      }
+      for (let i = 0; i <= boardHeight; i++) {
+        ctx.beginPath();
+        ctx.moveTo(0, i * blockSize);
+        ctx.lineTo(canvas.width, i * blockSize);
+        ctx.stroke();
+      }
+      
+      // Рисуем доску и текущую фигуру
+      drawBoard();
+      drawPiece();
+    }
+    
+    // Игровой цикл
+    function gameLoop(time = 0) {
+      if (gameOver) return;
+      
+      const deltaTime = time - lastTime;
+      lastTime = time;
+      
+      player.dropCounter += deltaTime;
+      if (player.dropCounter > player.dropInterval) {
+        drop();
+      }
+      
+      draw();
+      requestAnimationFrame(gameLoop);
+    }
+    
+    // Обработка ввода с клавиатуры
+    document.addEventListener('keydown', event => {
+      if (gameOver) return;
+      
+      switch (event.key) {
+        case 'ArrowLeft':
+          move(-1);
+          break;
+        case 'ArrowRight':
+          move(1);
+          break;
+        case 'ArrowDown':
+          drop();
+          break;
+        case 'ArrowUp':
+          rotate();
+          break;
+      }
+    });
+    
+    // Кнопка рестарта
+    restartButton.addEventListener('click', initGame);
+  </script>
+</body>
+</html>`
+    },
+    {
+      name: "Арканоид",
+      code: `<!DOCTYPE html>
+<html>
+<head>
+  <title>Арканоид</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #0f172a;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      font-family: Arial, sans-serif;
+      color: white;
+    }
+    .game-container {
+      position: relative;
+    }
+    canvas {
+      border: 2px solid #8b5cf6;
+      background-color: #1e293b;
+      display: block;
+    }
+    .overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background: rgba(15, 23, 42, 0.8);
+      visibility: hidden;
+    }
+    .message {
+      font-size: 36px;
+      color: white;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    .btn {
+      background: #8b5cf6;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      font-size: 18px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .btn:hover {
+      background: #7c3aed;
+    }
+    .info {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      font-size: 18px;
+    }
+    .score {
+      margin-bottom: 5px;
+    }
+    .lives {
+      display: flex;
+      align-items: center;
+    }
+    .life {
+      width: 12px;
+      height: 12px;
+      background: #ef4444;
+      border-radius: 50%;
+      margin-left: 5px;
+      display: inline-block;
+    }
+    .controls {
+      position: absolute;
+      bottom: 10px;
+      left: 0;
+      width: 100%;
+      text-align: center;
+      color: #94a3b8;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div class="game-container">
+    <canvas id="game" width="800" height="600"></canvas>
+    
+    <div class="info">
+      <div class="score">Счёт: <span id="score">0</span></div>
+      <div class="lives">Жизни: <span id="livesContainer"></span></div>
+    </div>
+    
+    <div class="overlay" id="overlay">
+      <div class="message" id="message"></div>
+      <button class="btn" id="startBtn">Начать игру</button>
+    </div>
+    
+    <div class="controls">
+      Управление: мышь или стрелки влево/вправо для движения платформы
+    </div>
+  </div>
+
+  <script>
+    // Получаем элементы DOM
+    const canvas = document.getElementById('game');
+    const ctx = canvas.getContext('2d');
+    const overlay = document.getElementById('overlay');
+    const message = document.getElementById('message');
+    const startBtn = document.getElementById('startBtn');
+    const scoreElement = document.getElementById('score');
+    const livesContainer = document.getElementById('livesContainer');
+    
+    // Определяем состояние игры
+    let gameState = {
+      score: 0,
+      lives: 3,
+      playing: false,
+      ball: {
+        x: canvas.width / 2,
+        y: canvas.height - 60,
+        radius: 10,
+        dx: 5,
+        dy: -5,
+        speed: 5
+      },
+      paddle: {
+        x: canvas.width / 2 - 50,
+        y: canvas.height - 30,
+        width: 100,
+        height: 15,
+        dx: 0,
+        speed: 10
+      },
+      bricks: [],
+      brickConfig: {
+        rows: 5,
+        cols: 10,
+        width: 70,
+        height: 20,
+        padding: 10,
+        offsetX: 45,
+        offsetY: 60,
+        colors: ['#ef4444', '#f97316', '#f59e0b', '#10b981', '#6366f1']
+      },
+      keys: {
+        left: false,
+        right: false
+      }
+    };
+    
+    // Создаем кирпичи
+    function createBricks() {
+      gameState.bricks = [];
+      
+      for (let row = 0; row < gameState.brickConfig.rows; row++) {
+        for (let col = 0; col < gameState.brickConfig.cols; col++) {
+          const brick = {
+            x: col * (gameState.brickConfig.width + gameState.brickConfig.padding) + gameState.brickConfig.offsetX,
+            y: row * (gameState.brickConfig.height + gameState.brickConfig.padding) + gameState.brickConfig.offsetY,
+            width: gameState.brickConfig.width,
+            height: gameState.brickConfig.height,
+            color: gameState.brickConfig.colors[row],
+            status: 1 // 1 = активен, 0 = разбит
+          };
+          
+          gameState.bricks.push(brick);
+        }
+      }
+    }
+    
+    // Обновляем UI
+    function updateUI() {
+      scoreElement.textContent = gameState.score;
+      
+      // Обновляем индикаторы жизней
+      livesContainer.innerHTML = '';
+      for (let i = 0; i < gameState.lives; i++) {
+        const lifeElement = document.createElement('div');
+        lifeElement.className = 'life';
+        livesContainer.appendChild(lifeElement);
+      }
+    }
+    
+    // Инициализация игры
+    function initGame() {
+      overlay.style.visibility = 'visible';
+      message.textContent = 'Арканоид';
+      
+      gameState.score = 0;
+      gameState.lives = 3;
+      gameState.ball.x = canvas.width / 2;
+      gameState.ball.y = canvas.height - 60;
+      gameState.ball.dx = gameState.ball.speed * (Math.random() > 0.5 ? 1 : -1);
+      gameState.ball.dy = -gameState.ball.speed;
+      gameState.paddle.x = canvas.width / 2 - gameState.paddle.width / 2;
+      
+      createBricks();
+      updateUI();
+      
+      // Рисуем начальное состояние
+      draw();
+    }
+    
+    // Старт игры
+    function startGame() {
+      overlay.style.visibility = 'hidden';
+      gameState.playing = true;
+      
+      // Запускаем игровой цикл
+      requestAnimationFrame(gameLoop);
+    }
+    
+    // Обработка окончания игры
+    function gameOver(won) {
+      gameState.playing = false;
+      overlay.style.visibility = 'visible';
+      
+      if (won) {
+        message.textContent = 'Вы выиграли! 🎉';
+      } else {
+        message.textContent = 'Игра окончена!';
+      }
+    }
+    
+    // Движение платформы
+    function movePaddle() {
+      // Клавиши управления
+      if (gameState.keys.left) {
+        gameState.paddle.dx = -gameState.paddle.speed;
+      } else if (gameState.keys.right) {
+        gameState.paddle.dx = gameState.paddle.speed;
+      } else {
+        gameState.paddle.dx = 0;
+      }
+      
+      // Обновляем позицию платформы
+      gameState.paddle.x += gameState.paddle.dx;
+      
+      // Предотвращаем выход за пределы поля
+      if (gameState.paddle.x < 0) {
+        gameState.paddle.x = 0;
+      } else if (gameState.paddle.x + gameState.paddle.width > canvas.width) {
+        gameState.paddle.x = canvas.width - gameState.paddle.width;
+      }
+    }
+    
+    // Движение мяча
+    function moveBall() {
+      // Обновляем позицию мяча
+      gameState.ball.x += gameState.ball.dx;
+      gameState.ball.y += gameState.ball.dy;
+      
+      // Отскок от стен
+      if (gameState.ball.x + gameState.ball.radius > canvas.width || 
+          gameState.ball.x - gameState.ball.radius < 0) {
+        gameState.ball.dx = -gameState.ball.dx;
+      }
+      
+      // Отскок от верха
+      if (gameState.ball.y - gameState.ball.radius < 0) {
+        gameState.ball.dy = -gameState.ball.dy;
+      }
+      
+      // Мяч вышел за нижнюю границу
+      if (gameState.ball.y + gameState.ball.radius > canvas.height) {
+        gameState.lives--;
+        updateUI();
+        
+        if (gameState.lives <= 0) {
+          gameOver(false);
+          return;
+        }
+        
+        // Сброс позиции мяча
+        gameState.ball.x = canvas.width / 2;
+        gameState.ball.y = canvas.height - 60;
+        gameState.ball.dx = gameState.ball.speed * (Math.random() > 0.5 ? 1 : -1);
+        gameState.ball.dy = -gameState.ball.speed;
+        gameState.paddle.x = canvas.width / 2 - gameState.paddle.width / 2;
+      }
+      
+      // Проверка столкновения с платформой
+      if (
+        gameState.ball.y + gameState.ball.radius > gameState.paddle.y &&
+        gameState.ball.y - gameState.ball.radius < gameState.paddle.y + gameState.paddle.height &&
+        gameState.ball.x > gameState.paddle.x &&
+        gameState.ball.x < gameState.paddle.x + gameState.paddle.width
+      ) {
+        // Меняем направление в зависимости от того, где мяч ударил по платформе
+        let hitPosition = (gameState.ball.x - gameState.paddle.x) / gameState.paddle.width;
+        
+        // Угол отскока зависит от места удара по платформе
+        let angle = hitPosition * Math.PI - Math.PI/2;
+        
+        gameState.ball.dx = gameState.ball.speed * Math.cos(angle);
+        gameState.ball.dy = -gameState.ball.speed * Math.sin(angle);
+      }
+      
+      // Проверка столкновения с кирпичами
+      for (let i = 0; i < gameState.bricks.length; i++) {
+        const brick = gameState.bricks[i];
+        
+        if (brick.status === 1) {
+          if (
+            gameState.ball.x + gameState.ball.radius > brick.x &&
+            gameState.ball.x - gameState.ball.radius < brick.x + brick.width &&
+            gameState.ball.y + gameState.ball.radius > brick.y &&
+            gameState.ball.y - gameState.ball.radius < brick.y + brick.height
+          ) {
+            // Меняем направление мяча
+            gameState.ball.dy = -gameState.ball.dy;
+            
+            // Помечаем кирпич как разбитый
+            brick.status = 0;
+            
+            // Увеличиваем счет
+            gameState.score += 10;
+            updateUI();
+            
+            // Проверяем, все ли кирпичи разбиты
+            if (gameState.bricks.every(brick => brick.status === 0)) {
+              gameOver(true);
+              return;
+            }
+          }
+        }
+      }
+    }
+    
+    // Отрисовка мяча
+    function drawBall() {
+      ctx.beginPath();
+      ctx.arc(gameState.ball.x, gameState.ball.y, gameState.ball.radius, 0, Math.PI * 2);
+      ctx.fillStyle = '#8b5cf6';
+      ctx.fill();
+      ctx.closePath();
+    }
+    
+    // Отрисовка платформы
+    function drawPaddle() {
+      ctx.beginPath();
+      ctx.rect(
+        gameState.paddle.x,
+        gameState.paddle.y,
+        gameState.paddle.width,
+        gameState.paddle.height
+      );
+      ctx.fillStyle = '#3b82f6';
+      ctx.fill();
+      ctx.closePath();
+    }
+    
+    // Отрисовка кирпичей
+    function drawBricks() {
+      gameState.bricks.forEach(brick => {
+        if (brick.status === 1) {
+          ctx.beginPath();
+          ctx.rect(brick.x, brick.y, brick.width, brick.height);
+          ctx.fillStyle = brick.color;
+          ctx.fill();
+          ctx.closePath();
+          
+          // Добавляем блик (эффект объема)
+          ctx.beginPath();
+          ctx.rect(brick.x + 2, brick.y + 2, brick.width - 4, 5);
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+          ctx.fill();
+          ctx.closePath();
+        }
+      });
+    }
+    
+    // Отрисовка всех элементов
+    function draw() {
+      // Очищаем холст
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+      // Рисуем компоненты
+      drawBricks();
+      drawBall();
+      drawPaddle();
+    }
+    
+    // Игровой цикл
+    function gameLoop() {
+      if (!gameState.playing) return;
+      
+      // Обновляем позиции
+      movePaddle();
+      moveBall();
+      
+      // Отрисовываем
+      draw();
+      
+      // Следующий кадр
+      requestAnimationFrame(gameLoop);
+    }
+    
+    // Обработчики событий
+    startBtn.addEventListener('click', startGame);
+    
+    // Управление клавиатурой
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft') {
+        gameState.keys.left = true;
+      } else if (e.key === 'ArrowRight') {
+        gameState.keys.right = true;
+      }
+    });
+    
+    document.addEventListener('keyup', (e) => {
+      if (e.key === 'ArrowLeft') {
+        gameState.keys.left = false;
+      } else if (e.key === 'ArrowRight') {
+        gameState.keys.right = false;
+      }
+    });
+    
+    // Управление мышью
+    canvas.addEventListener('mousemove', (e) => {
+      // Получаем позицию мыши относительно canvas
+      const rect = canvas.getBoundingClientRect();
+      const mouseX = e.clientX - rect.left;
+      
+      // Обновляем позицию платформы
+      gameState.paddle.x = mouseX - gameState.paddle.width / 2;
+      
+      // Предотвращаем выход за пределы поля
+      if (gameState.paddle.x < 0) {
+        gameState.paddle.x = 0;
+      } else if (gameState.paddle.x + gameState.paddle.width > canvas.width) {
+        gameState.paddle.x = canvas.width - gameState.paddle.width;
+      }
+    });
+    
+    // Запускаем игру
+    initGame();
+  </script>
+</body>
+</html>`
     }
   ]
 };
@@ -713,9 +1622,25 @@ export function ChatInterface({ selectedModel, models }: ChatInterfaceProps) {
     }
   };
 
-  const getRandomGameTemplate = () => {
-    const randomIndex = Math.floor(Math.random() * demoContent.gameTemplates.length);
-    return demoContent.gameTemplates[randomIndex];
+  const getGameTemplateByPrompt = (prompt: string) => {
+    // Выбираем шаблон игры на основе ключевых слов в запросе
+    prompt = prompt.toLowerCase();
+    
+    if (prompt.includes('платформер') || prompt.includes('прыжки') || prompt.includes('марио')) {
+      return demoContent.gameTemplates[0]; // Платформер
+    } else if (prompt.includes('змейка') || prompt.includes('змея') || prompt.includes('snake')) {
+      return demoContent.gameTemplates[1]; // Змейка
+    } else if (prompt.includes('шутер') || prompt.includes('стрелялка') || prompt.includes('космос')) {
+      return demoContent.gameTemplates[2]; // Космический шутер
+    } else if (prompt.includes('тетрис') || prompt.includes('блоки') || prompt.includes('tetris')) {
+      return demoContent.gameTemplates[3]; // Тетрис
+    } else if (prompt.includes('арканоид') || prompt.includes('блоки') || prompt.includes('шарик')) {
+      return demoContent.gameTemplates[4]; // Арканоид
+    } else {
+      // По умолчанию возвращаем случайный шаблон
+      const randomIndex = Math.floor(Math.random() * demoContent.gameTemplates.length);
+      return demoContent.gameTemplates[randomIndex];
+    }
   };
 
   const handleSend = () => {
@@ -766,7 +1691,7 @@ export function ChatInterface({ selectedModel, models }: ChatInterfaceProps) {
       }];
     }
     if (modelId.includes("gemini")) {
-      const gameTemplate = getRandomGameTemplate();
+      const gameTemplate = getGameTemplateByPrompt(prompt);
       return [{ 
         type: "game", 
         url: "", 
@@ -786,7 +1711,7 @@ export function ChatInterface({ selectedModel, models }: ChatInterfaceProps) {
       return `🎬 Видео по запросу "${prompt}" готово. Оно демонстрирует именно ту сцену, которую вы описали. Вы можете просмотреть и сохранить его.`;
     }
     if (modelId.includes("gemini")) {
-      const gameTemplate = getRandomGameTemplate();
+      const gameTemplate = getGameTemplateByPrompt(prompt);
       return `💻 Я создал игру "${gameTemplate.name}" по вашему запросу "${prompt}". Вы можете запустить её прямо сейчас или сохранить код для дальнейшего использования.`;
     }
     if (modelId.includes("custom")) {
